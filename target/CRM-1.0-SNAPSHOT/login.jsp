@@ -37,8 +37,8 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 			//验证账号密码不能为空
 			//取得账号密码
 			//将文本中的左右空格去掉，使用$.trim()
-			var loginAct = $.trim($("loginAct").val());
-			var loginPwd = $.trim($("loginPwd").val());
+			var loginAct = $.trim($("#loginAct").val());
+			var loginPwd = $.trim($("#loginPwd").val());
 
 			if(loginAct=="" || loginPwd==""){
 
