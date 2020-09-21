@@ -28,6 +28,12 @@ success:function(data){
 }
 })
 
+//创建时间为当前系统时间
+String createTime = DateTimeUtil.getSysTime();
+//创建人为当前登陆者，从session中获取账户名
+String createBy = ((User)request.getSession().getAttribute("user")).getName();
+
+
 token:  fbba7622990b199e084b13f044bd6e979c4c944f
 </body>
 </html>

@@ -1,20 +1,108 @@
+<%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8" %>
+<%
+String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/";
+%>
 <!DOCTYPE html>
 <html>
 <head>
+	<base href="<%=basePath %>"/>
 <meta charset="UTF-8">
 
-<link href="../../jquery/bootstrap_3.3.0/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
-<link href="../../jquery/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css" type="text/css" rel="stylesheet" />
+<link href="jquery/bootstrap_3.3.0/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+<link href="jquery/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css" type="text/css" rel="stylesheet" />
 
-<script type="text/javascript" src="../../jquery/jquery-1.11.1-min.js"></script>
-<script type="text/javascript" src="../../jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="../../jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
-<script type="text/javascript" src="../../jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
+<script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
+<script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
+<script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
 
 <script type="text/javascript">
 
 	$(function(){
-		
+		//为创建按钮绑定事件，打开模态窗口
+		$("#addBtn").click(function(){
+
+			$(".time").datetimepicker({
+				minView: "month",
+				language:  'zh-CN',
+				format: 'yyyy-mm-dd',
+				autoclose: true,
+				todayBtn: true,
+				pickerPosition: "bottom-left"
+			});
+			/*
+			操作模态窗口的方式：
+				需要操作的模态窗口的jquery对象，调用modal方法，为该方法传递参数 show：打开模态窗口； hide：隐藏模态窗口
+			 */
+			//$("#createActivityModal").modal("show");
+			$.ajax({
+
+				url:"workbench/activity/getUserList.do",
+				data:{
+
+				},
+				type:"get",
+				dataType:"json",
+				success:function(data){
+					var html = "<option></option>";
+					//遍历出来的每一个n 就是每一个user对象
+					$.each(data,function(i,n){
+						html += "<option value='"+n.id+"'>"+n.name+"</option>";
+					})
+
+					$("#create-owner").html(html);
+
+					//将当前登陆的用户设置为下拉框默认的选项
+					//取得当前登陆用户的id
+					//在js中使用el表达式，el表达式一定要套用在字符串中
+					var id = "${user.id}";
+					$("#create-owner").val(id);
+
+					//所有者下拉框处理完毕后，展现模态窗口
+					$("#createActivityModal").modal("show");
+				}
+			})
+		})
+
+		$("#saveBtn").click(function(){
+			$.ajax({
+				url:"workbench/activity/save.do",
+				data:{
+					owner : $.trim($("#create-owner").val()),
+					name : $.trim($("#create-name").val()),
+					startDate : $.trim($("#create-startDate").val()),
+					endDate : $.trim($("#create-endDate").val()),
+					cost : $.trim($("#create-cost").val()),
+					description : $.trim($("#create-description").val())
+
+				},
+				type:"post",
+				dataType: "json",
+				success:function(data){
+					if(data.success){
+						//添加成功后，刷新市场活动表（局部刷新）
+						//清空模态窗口中的数据
+						/*
+							jquery提供的reset方法无效，但原生js提供了可用的reset方法
+							所以要将jquery转换为原生dom对象
+
+						  	jquery对象->dom对象：
+						  		jquery对象[下标]
+
+						  	dom对象->jquery对象：
+						  		$(dom)
+						*/
+						$("#activityAddForm")[0].reset();
+						//关闭模态窗口
+						$("#createActivityModal").modal("hide");
+					}else{
+						//
+						alert("添加市场活动失败");
+					}
+				}
+
+			})
+		})
 		
 		
 	});
@@ -35,15 +123,13 @@
 				</div>
 				<div class="modal-body">
 				
-					<form class="form-horizontal" role="form">
+					<form id="activityAddForm" class="form-horizontal" role="form">
 					
 						<div class="form-group">
 							<label for="create-marketActivityOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
-								<select class="form-control" id="create-marketActivityOwner">
-								  <option>zhangsan</option>
-								  <option>lisi</option>
-								  <option>wangwu</option>
+								<select class="form-control" id="create-owner">
+
 								</select>
 							</div>
                             <label for="create-marketActivityName" class="col-sm-2 control-label">名称<span style="font-size: 15px; color: red;">*</span></label>
@@ -55,11 +141,11 @@
 						<div class="form-group">
 							<label for="create-startTime" class="col-sm-2 control-label">开始日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="create-startTime">
+								<input type="text" class="form-control time" id="create-startDate" readonly>
 							</div>
 							<label for="create-endTime" class="col-sm-2 control-label">结束日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="create-endTime">
+								<input type="text" class="form-control time" id="create-endDate" readonly>
 							</div>
 						</div>
                         <div class="form-group">
@@ -72,7 +158,7 @@
 						<div class="form-group">
 							<label for="create-describe" class="col-sm-2 control-label">描述</label>
 							<div class="col-sm-10" style="width: 81%;">
-								<textarea class="form-control" rows="3" id="create-describe"></textarea>
+								<textarea class="form-control" rows="3" id="create-description"></textarea>
 							</div>
 						</div>
 						
@@ -80,8 +166,11 @@
 					
 				</div>
 				<div class="modal-footer">
+					<!--
+						data-dismiss="modal": 关闭模态窗口
+					-->
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">保存</button>
+					<button type="button" class="btn btn-primary" id="saveBtn">保存</button>
 				</div>
 			</div>
 		</div>
@@ -202,7 +291,16 @@
 			</div>
 			<div class="btn-toolbar" role="toolbar" style="background-color: #F7F7F7; height: 50px; position: relative;top: 5px;">
 				<div class="btn-group" style="position: relative; top: 18%;">
-				  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createActivityModal"><span class="glyphicon glyphicon-plus"></span> 创建</button>
+					<!--
+						点击创建按钮，观察两个属性和属性值
+						data-toggle="modal"：
+							表示触发该按钮，将要打开一个模态窗口
+						data-target="#createActivityModal"：
+							表示要打开哪个模态窗口，通过#id的形式找到窗口
+						现在我们已属性和属性值的方式写在了button元素中，但这样做有局限性：无法对按钮进行功能扩充
+						所以在实际开发中，对于触发模态窗口的操作，一定不能写死在元素中，应该由自己写js代码来操控
+					-->
+				  <button type="button" class="btn btn-primary" id="addBtn"><span class="glyphicon glyphicon-plus"></span> 创建</button>
 				  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editActivityModal"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
 				  <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 				</div>
@@ -222,14 +320,14 @@
 					<tbody>
 						<tr class="active">
 							<td><input type="checkbox" /></td>
-							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">发传单</a></td>
+							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='workbench/activity/detail.jsp';">发传单</a></td>
                             <td>zhangsan</td>
 							<td>2020-10-10</td>
 							<td>2020-10-20</td>
 						</tr>
                         <tr class="active">
                             <td><input type="checkbox" /></td>
-                            <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">发传单</a></td>
+                            <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='workbench/activity/detail.jsp';">发传单</a></td>
                             <td>zhangsan</td>
                             <td>2020-10-10</td>
                             <td>2020-10-20</td>
