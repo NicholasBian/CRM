@@ -4,6 +4,7 @@ import com.bian.crm.settings.domain.User;
 import com.bian.crm.settings.service.UserService;
 import com.bian.crm.settings.service.impl.UserServiceImpl;
 import com.bian.crm.utils.*;
+import com.bian.crm.vo.PaginationVO;
 import com.bian.crm.workbench.domain.Activity;
 import com.bian.crm.workbench.service.ActivityService;
 import com.bian.crm.workbench.service.impl.ActivityServiceImpl;
@@ -29,7 +30,58 @@ public class ActivityController extends HttpServlet {
             getUserList(request, response);
         }else if("/workbench/activity/save.do".equals(path)){
             save(request, response);
+        }else if("/workbench/activity/pageList.do".equals(path)){
+            pageList(request, response);
         }
+    }
+
+    private void pageList(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("进入到查询市场活动信息列表的操作（结合分页查询和条件查询）");
+
+        String name = request.getParameter("name");
+        String owner = request.getParameter("owner");
+        String startDate = request.getParameter("startDate");
+        String endDate = request.getParameter("endDate");
+        String pageNoStr = request.getParameter("pageNo");
+        int pageNo = Integer.valueOf(pageNoStr);
+        //每页展现的记录数
+        String pageSizeStr = request.getParameter("pageSize");
+        int pageSize = Integer.valueOf(pageSizeStr);
+        //计算出略过的记录数
+        int skipCount = (pageNo - 1)*pageSize;
+
+        Map<String,Object> map = new HashMap<String, Object>();
+        map.put("name",name);
+        map.put("owner",owner);
+        map.put("startDate",startDate);
+        map.put("endDate",endDate);
+        map.put("skipCount",skipCount);
+        map.put("pageSize",pageSize);
+
+        ActivityService as = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+        /*
+            前端要：市场活动信息列表
+                  查询总条数
+
+                  业务层拿到了以上两条信息之后，如果做返回
+                  map
+                  map.put("dataList":dataList)
+                  map.put("total":total)
+                  PrintJson map-->json
+                  {"total":100,"dataList":[{1},{2},{3}]}
+
+                  vo
+                  PaginationVO<T>
+                    private int total;
+                    private List<T> dataList;
+
+                  PaginationVO<Activity> vo = new PaginationVO<>;
+                  vo.setTotal(total)
+                  将来分页查询，每个模块都有，所以我们选择使用一个通用vo，操作起来比较方便
+         */
+        PaginationVO<Activity> vo = as.pageList(map);
+        PrintJson.printJsonObj(response,vo);
     }
 
     private void save(HttpServletRequest request, HttpServletResponse response) {
