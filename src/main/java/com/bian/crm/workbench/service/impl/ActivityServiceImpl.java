@@ -7,6 +7,7 @@ import com.bian.crm.vo.PaginationVO;
 import com.bian.crm.workbench.dao.ActivityDao;
 import com.bian.crm.workbench.dao.ActivityRemarkDao;
 import com.bian.crm.workbench.domain.Activity;
+import com.bian.crm.workbench.domain.ActivityRemark;
 import com.bian.crm.workbench.service.ActivityService;
 
 import java.util.HashMap;
@@ -94,5 +95,77 @@ public class ActivityServiceImpl implements ActivityService {
         }
 
         return flag;
+    }
+
+    public Activity detail(String id) {
+
+        Activity a = activityDao.detail(id);
+        return a;
+    }
+
+    public List<ActivityRemark> getRemarkListByAid(String activityId) {
+
+        List<ActivityRemark> arList = activityRemarkDao.getRemarkListByAid(activityId);
+
+        return arList;
+    }
+
+    public boolean deleteRemark(String id) {
+
+        boolean flag = true;
+
+        int count = activityRemarkDao.deleteById(id);
+
+        if(count!=1){
+            flag = false;
+        }
+        return flag;
+    }
+
+    public boolean saveRemark(ActivityRemark ar) {
+
+        boolean flag = true;
+
+        int count = activityRemarkDao.saveRemark(ar);
+
+        if(count!=1){
+            flag=false;
+        }
+
+        return flag;
+    }
+
+    public boolean updateRemark(ActivityRemark ar) {
+
+        boolean flag = true;
+
+        int count = activityRemarkDao.updateRemark(ar);
+
+        if(count!=1){
+            flag=false;
+        }
+
+        return flag;
+    }
+
+    public List<Activity> getActivityListByClueId(String clueId) {
+
+        List<Activity> aList = activityDao.getActivityListByClueId(clueId);
+
+        return aList;
+    }
+
+    public List<Activity> getActivityListByNameAndNotByClueId(Map<String, String> map) {
+
+        List<Activity> aList = activityDao.getActivityListByNameAndNotByClueId(map);
+
+        return aList;
+    }
+
+    public List<Activity> getActivityListByName(String aname) {
+
+        List<Activity> aList = activityDao.getActivityListByName(aname);
+
+        return aList;
     }
 }

@@ -35,5 +35,23 @@ String createBy = ((User)request.getSession().getAttribute("user")).getName();
 
 
 token:  fbba7622990b199e084b13f044bd6e979c4c944f
+
+$(".time").datetimepicker({
+minView: "month",
+language:  'zh-CN',
+format: 'yyyy-mm-dd',
+autoclose: true,
+todayBtn: true,
+pickerPosition: "bottom-left"
+});
+
+<%--
+$代表jQuery对象，同时也是一个函数对象
+$()和jQuery()是jQuery的核心函数，执行这两个元素返回的是一个DOM元素
+$()是一个函数，等同于jQuery()，可在括号内传参数，传参后可获取元素
+$(".one")表示获取class=“one"的元素，返回一个jQuery对象
+$(”.one").onclick表示class="one"的点击事件
+$.post() $.get() $.ajax() 都是jQuery对象的方法
+--%>
 </body>
 </html>
