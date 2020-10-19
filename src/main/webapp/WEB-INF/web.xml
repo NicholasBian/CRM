@@ -81,8 +81,30 @@
     <url-pattern>/workbench/clue/getActivityListByNameAndNotByClueId.do</url-pattern>
     <url-pattern>/workbench/clue/bund.do</url-pattern>
     <url-pattern>/workbench/clue/getActivityListByName.do</url-pattern>
+    <url-pattern>/workbench/clue/convert.do</url-pattern>
+    <url-pattern>/workbench/clue/pageList.do</url-pattern>
+    <url-pattern>/workbench/clue/delete.do</url-pattern>
+    <url-pattern>/workbench/clue/getUserListAndClue.do</url-pattern>
+    <url-pattern>/workbench/clue/update.do</url-pattern>
 
 
+
+  </servlet-mapping>
+
+  <!--交易活动控制器-->
+  <servlet>
+    <servlet-name>TranController</servlet-name>
+    <servlet-class>com.bian.crm.workbench.web.controller.TranController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>TranController</servlet-name>
+    <url-pattern>/workbench/transaction/add.do</url-pattern>
+    <url-pattern>/workbench/transaction/getCustomerName.do</url-pattern>
+    <url-pattern>/workbench/transaction/save.do</url-pattern>
+    <url-pattern>/workbench/transaction/detail.do</url-pattern>
+    <url-pattern>/workbench/transaction/getHistoryListByTranId.do</url-pattern>
+    <url-pattern>/workbench/transaction/changeStage.do</url-pattern>
+    <url-pattern>/workbench/transaction/getCharts.do</url-pattern>
 
 
   </servlet-mapping>

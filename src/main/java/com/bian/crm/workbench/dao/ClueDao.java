@@ -2,6 +2,9 @@ package com.bian.crm.workbench.dao;
 
 import com.bian.crm.workbench.domain.Clue;
 
+import java.util.List;
+import java.util.Map;
+
 public interface ClueDao {
 
 
@@ -9,4 +12,15 @@ public interface ClueDao {
 
     Clue detail(String id);
 
+    Clue getById(String clueId);
+
+    int delete(String clueId);
+
+    int getTotalByCondition(Map<String, Object> map);
+
+    List<Clue> getClueListByCondition(Map<String, Object> map);
+
+    int multiDelete(String[] ids);
+
+    int update(Clue c);
 }
